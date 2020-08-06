@@ -11,14 +11,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.inteligenciadigital.netflixremake.model.Category;
 import com.inteligenciadigital.netflixremake.model.Movie;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-	private MainAdapter mainAdapter;
+	private CategoryAdapter categoryAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -27,17 +29,25 @@ public class MainActivity extends AppCompatActivity {
 
 		RecyclerView recyclerView = findViewById(R.id.recycler_view_main);
 
-		List<Movie> movies = new ArrayList<>();
-		for (int i = 0; i < 30; i++) {
-			Movie movie = new Movie();
-			movie.setCoverUrl(R.drawable.movie);
-			movies.add(movie);
+		List<Category> categories = new ArrayList<>();
+		for (int i = 0; i < 10; i ++) {
+			Category category = new Category();
+			category.setName("Categoria " + i);
+
+			List<Movie> movies = new ArrayList<>();
+			for (int j = 0; j < 30; j++) {
+				Movie movie = new Movie();
+				movie.setCoverUrl(R.drawable.movie);
+				movies.add(movie);
+			}
+			category.setMovies(movies);
+			categories.add(category);
 		}
 
-		this.mainAdapter = new MainAdapter(movies);
+		this.categoryAdapter = new CategoryAdapter(categories);
 
-		recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
-		recyclerView.setAdapter(this.mainAdapter);
+		recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+		recyclerView.setAdapter(this.categoryAdapter);
 
 	}
 
@@ -51,11 +61,11 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-	private class MainAdapter extends RecyclerView.Adapter<MovieHolder> {
+	private class MovieAdapter extends RecyclerView.Adapter<MovieHolder> {
 
 		private List<Movie> movies;
 
-		public MainAdapter(List<Movie> movies) {
+		public MovieAdapter(List<Movie> movies) {
 			this.movies = movies;
 		}
 
@@ -76,6 +86,47 @@ public class MainActivity extends AppCompatActivity {
 		@Override
 		public int getItemCount() {
 			return this.movies.size();
+		}
+	}
+
+	private class CategoryHolder extends RecyclerView.ViewHolder {
+
+		private final TextView textViewTitle;
+		private final RecyclerView recyclerViewMovie;
+
+		public CategoryHolder(@NonNull View itemView) {
+			super(itemView);
+			this.textViewTitle = itemView.findViewById(R.id.text_view_title);
+			this.recyclerViewMovie = itemView.findViewById(R.id.recycler_view_movie);
+		}
+	}
+
+	private class CategoryAdapter extends RecyclerView.Adapter<CategoryHolder> {
+
+		private List<Category> categories;
+
+		public CategoryAdapter(List<Category> categories) {
+			this.categories = categories;
+		}
+
+		@NonNull
+		@Override
+		public CategoryHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+			View view = getLayoutInflater().inflate(R.layout.category_item, parent, false);
+			return new CategoryHolder(view);
+		}
+
+		@Override
+		public void onBindViewHolder(@NonNull CategoryHolder holder, int position) {
+			Category category = this.categories.get(position);
+			holder.textViewTitle.setText(category.getName());
+			holder.recyclerViewMovie.setAdapter(new MovieAdapter(category.getMovies()));
+			holder.recyclerViewMovie.setLayoutManager(new LinearLayoutManager(getBaseContext(), RecyclerView.HORIZONTAL, false));
+		}
+
+		@Override
+		public int getItemCount() {
+			return this.categories.size();
 		}
 	}
 }
