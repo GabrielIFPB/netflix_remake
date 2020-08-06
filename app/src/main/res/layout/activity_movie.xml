@@ -6,13 +6,24 @@
 	android:layout_height="match_parent"
 	tools:context=".MovieActivity">
 
+	<ImageView
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:src="@drawable/shadows"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintDimensionRatio="16:9"
+		android:scaleType="centerCrop"
+		/>
+
 	<androidx.appcompat.widget.Toolbar
 		android:id="@+id/tootbar"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:minHeight="?attr/actionBarSize"
 		android:theme="?attr/actionBarTheme"
-		android:background="@color/colorPrimary"
+		android:background="@android:color/transparent"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintTop_toTopOf="parent"
