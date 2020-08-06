@@ -15,7 +15,6 @@ import com.inteligenciadigital.netflixremake.model.Category;
 import com.inteligenciadigital.netflixremake.model.Movie;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -37,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 			List<Movie> movies = new ArrayList<>();
 			for (int j = 0; j < 30; j++) {
 				Movie movie = new Movie();
-				movie.setCoverUrl(R.drawable.movie);
+//				movie.setCoverUrl(R.drawable.movie);
 				movies.add(movie);
 			}
 			category.setMovies(movies);
@@ -79,8 +78,7 @@ public class MainActivity extends AppCompatActivity {
 		@Override
 		public void onBindViewHolder(@NonNull MovieHolder holder, int position) {
 			Movie movie = this.movies.get(position);
-			holder.imageViewCover.setImageResource(movie.getCoverUrl());
-
+//			holder.imageViewCover.setImageResource(movie.getCoverUrl());
 		}
 
 		@Override
