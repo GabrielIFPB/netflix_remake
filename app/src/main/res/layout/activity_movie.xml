@@ -8,7 +8,7 @@
 	<androidx.constraintlayout.widget.ConstraintLayout
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:background="@android:color/black"
+		android:background="@color/colorPrimary"
 		tools:context=".MovieActivity">
 
 		<ImageView
@@ -34,9 +34,9 @@
 			app:layout_constraintTop_toTopOf="parent" />
 
 		<ImageView
-			android:layout_width="96dp"
-			android:layout_height="96dp"
-			android:src="@drawable/ic_baseline_play_circle_outline_24"
+			android:layout_width="52dp"
+			android:layout_height="52dp"
+			android:src="@drawable/play_button"
 			app:layout_constraintBottom_toBottomOf="@id/image_view_cover"
 			app:layout_constraintEnd_toEndOf="@id/image_view_cover"
 			app:layout_constraintStart_toStartOf="@id/image_view_cover"
