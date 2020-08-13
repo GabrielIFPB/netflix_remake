@@ -24,13 +24,18 @@ import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class JsonDownloadTask extends AsyncTask<String, Void, List<Category>> {
+public class CategoryTask extends AsyncTask<String, Void, List<Category>> {
 
 	private ProgressDialog dialog;
 	private final WeakReference<Context> context;
+	private CategoryLoader categoryLoader;
 
-	public JsonDownloadTask(Context context) {
+	public CategoryTask(Context context) {
 		this.context = new WeakReference<>(context);
+	}
+
+	public void setCategoryLoader(CategoryLoader categoryLoader) {
+		this.categoryLoader = categoryLoader;
 	}
 
 	// main-thread
@@ -46,9 +51,10 @@ public class JsonDownloadTask extends AsyncTask<String, Void, List<Category>> {
 	@Override
 	protected List<Category> doInBackground(String... strings) {
 		String url = strings[0];
+		HttpsURLConnection urlConnection = null;
 		try {
 			URL requestUrl = new URL(url);
-			HttpsURLConnection urlConnection = (HttpsURLConnection) requestUrl.openConnection();
+			urlConnection = (HttpsURLConnection) requestUrl.openConnection();
 			urlConnection.setReadTimeout(2000);
 			urlConnection.setConnectTimeout(2000);
 
@@ -73,6 +79,9 @@ public class JsonDownloadTask extends AsyncTask<String, Void, List<Category>> {
 			e.printStackTrace();
 		} catch (JSONException e) {
 			e.printStackTrace();
+		} finally {
+			if (urlConnection != null)
+				urlConnection.disconnect();
 		}
 		return null;
 	}
@@ -82,7 +91,11 @@ public class JsonDownloadTask extends AsyncTask<String, Void, List<Category>> {
 	protected void onPostExecute(List<Category> categories) {
 		super.onPostExecute(categories);
 		this.dialog.dismiss();
-//
+
+		// listener
+		if (this.categoryLoader != null) {
+			this.categoryLoader.onResult(categories);
+		}
 	}
 
 	private String toString(InputStream is) throws IOException {
@@ -108,9 +121,14 @@ public class JsonDownloadTask extends AsyncTask<String, Void, List<Category>> {
 			JSONArray movieArray = category.getJSONArray("movie");
 			for (int j = 0; j < movieArray.length(); j++) {
 				JSONObject movie = movieArray.getJSONObject(j);
+
 				String coverURl = movie.getString("cover_url");
+				int id = movie.getInt("id");
+
 				Movie movieObj = new Movie();
+				movieObj.setId(id);
 				movieObj.setCoverUrl(coverURl);
+
 				movies.add(movieObj);
 			}
 			Category categoryObj = new Category();
@@ -119,5 +137,9 @@ public class JsonDownloadTask extends AsyncTask<String, Void, List<Category>> {
 			categories.add(categoryObj);
 		}
 		return categories;
+	}
+
+	public interface CategoryLoader {
+		void onResult(List<Category> categories);
 	}
 }
