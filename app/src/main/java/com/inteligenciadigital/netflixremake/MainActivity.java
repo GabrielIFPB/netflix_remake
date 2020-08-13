@@ -31,19 +31,6 @@ public class MainActivity extends AppCompatActivity implements CategoryTask.Cate
 		RecyclerView recyclerView = findViewById(R.id.recycler_view_main);
 
 		List<Category> categories = new ArrayList<>();
-//		for (int i = 0; i < 10; i ++) {
-//			Category category = new Category();
-//			category.setName("Categoria " + i);
-//
-//			List<Movie> movies = new ArrayList<>();
-//			for (int j = 0; j < 30; j++) {
-//				Movie movie = new Movie();
-////				movie.setCoverUrl(R.drawable.movie);
-//				movies.add(movie);
-//			}
-//			category.setMovies(movies);
-//			categories.add(category);
-//		}
 
 		this.categoryAdapter = new CategoryAdapter(categories);
 
@@ -63,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements CategoryTask.Cate
 		this.categoryAdapter.notifyDataSetChanged();
 	}
 
-	private class MovieHolder extends RecyclerView.ViewHolder {
+	private static class MovieHolder extends RecyclerView.ViewHolder {
 
 		private final ImageView imageViewCover;
 
@@ -101,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements CategoryTask.Cate
 		}
 	}
 
-	private class CategoryHolder extends RecyclerView.ViewHolder {
+	private static class CategoryHolder extends RecyclerView.ViewHolder {
 
 		private final TextView textViewTitle;
 		private final RecyclerView recyclerViewMovie;
