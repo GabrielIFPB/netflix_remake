@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +38,6 @@ public class MainActivity extends AppCompatActivity implements CategoryTask.Cate
 		recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
 		recyclerView.setAdapter(this.categoryAdapter);
 
-
 		CategoryTask categoryTask = new CategoryTask(this);
 		categoryTask.setCategoryLoader(this);
 		categoryTask.execute("https://tiagoaguiar.co/api/netflix/home");
@@ -54,13 +54,20 @@ public class MainActivity extends AppCompatActivity implements CategoryTask.Cate
 
 		private final ImageView imageViewCover;
 
-		public MovieHolder(@NonNull View itemView) {
+		public MovieHolder(@NonNull View itemView, final OnClickItemListener onClickItemListener) {
 			super(itemView);
 			this.imageViewCover = itemView.findViewById(R.id.image_view_cover);
+			itemView.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					onClickItemListener.onClick(getAdapterPosition());
+				}
+			});
 		}
 	}
 
-	private class MovieAdapter extends RecyclerView.Adapter<MovieHolder> {
+	private class MovieAdapter extends RecyclerView.Adapter<MovieHolder>
+			implements OnClickItemListener {
 
 		private List<Movie> movies;
 
@@ -72,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements CategoryTask.Cate
 		@Override
 		public MovieHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 			View view = getLayoutInflater().inflate(R.layout.movie_item, parent, false);
-			return new MovieHolder(view);
+			return new MovieHolder(view, this);
 		}
 
 		@Override
@@ -85,6 +92,13 @@ public class MainActivity extends AppCompatActivity implements CategoryTask.Cate
 		@Override
 		public int getItemCount() {
 			return this.movies.size();
+		}
+
+		@Override
+		public void onClick(int position) {
+			Intent intent = new Intent(MainActivity.this, MovieActivity.class);
+			intent.putExtra("id", this.movies.get(position).getId());
+			startActivity(intent);
 		}
 	}
 
@@ -133,5 +147,9 @@ public class MainActivity extends AppCompatActivity implements CategoryTask.Cate
 			this.categories.addAll(categories);
 			this.categories.addAll(categories);
 		}
+	}
+
+	interface OnClickItemListener {
+		void onClick(int position);
 	}
 }

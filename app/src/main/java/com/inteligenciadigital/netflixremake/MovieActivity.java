@@ -3,29 +3,30 @@ package com.inteligenciadigital.netflixremake;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.inteligenciadigital.netflixremake.model.Movie;
+import com.inteligenciadigital.netflixremake.model.MovieDetail;
+import com.inteligenciadigital.netflixremake.util.MovieDetailTask;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovieActivity extends AppCompatActivity {
+public class MovieActivity extends AppCompatActivity implements MovieDetailTask.MovieDetailLoader {
 
 	private TextView txtTitle;
 	private TextView txtDesc;
 	private TextView txtCast;
+//	private MovieAdapter movieAdapter;
 	private RecyclerView recyclerView;
 
 	@Override
@@ -76,9 +77,22 @@ public class MovieActivity extends AppCompatActivity {
 
 		this.recyclerView.setAdapter(new MovieAdapter(movies));
 		this.recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+
+		Bundle extras = this.getIntent().getExtras();
+		if (extras != null) {
+			int id = extras.getInt("id");
+			MovieDetailTask movieDetailTask = new MovieDetailTask(this);
+			movieDetailTask.setMovieDetailLoader(this);
+			movieDetailTask.execute("https://tiagoaguiar.co/api/netflix/" + id);
+		}
 	}
 
-	private class MovieHolder extends RecyclerView.ViewHolder {
+	@Override
+	public void onResult(MovieDetail movieDetail) {
+		Log.i("TESTE", movieDetail.toString());
+	}
+
+	private static class MovieHolder extends RecyclerView.ViewHolder {
 
 		private final ImageView imageViewCover;
 
@@ -101,7 +115,7 @@ public class MovieActivity extends AppCompatActivity {
 		public MovieActivity.MovieHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 			View view = getLayoutInflater()
 					.inflate(R.layout.movie_item_similar, parent, false);
-			return new MovieActivity.MovieHolder(view);
+			return new MovieHolder(view);
 		}
 
 		@Override

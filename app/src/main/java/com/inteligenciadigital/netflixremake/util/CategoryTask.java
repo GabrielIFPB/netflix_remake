@@ -27,8 +27,8 @@ import javax.net.ssl.HttpsURLConnection;
 public class CategoryTask extends AsyncTask<String, Void, List<Category>> {
 
 	private ProgressDialog dialog;
-	private final WeakReference<Context> context;
 	private CategoryLoader categoryLoader;
+	private final WeakReference<Context> context;
 
 	public CategoryTask(Context context) {
 		this.context = new WeakReference<>(context);
