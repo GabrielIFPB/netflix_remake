@@ -25,13 +25,13 @@ import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class MovieDetailtask extends AsyncTask<String, Void, MovieDetail> {
+public class MovieDetailTask extends AsyncTask<String, Void, MovieDetail> {
 
 	private ProgressDialog dialog;
 	private MovieDetailLoader movieDetailLoader;
 	private final WeakReference<Context> context;
 
-	public MovieDetailtask(Context context) {
+	public MovieDetailTask(Context context) {
 		this.context = new WeakReference<>(context);
 	}
 
@@ -86,12 +86,14 @@ public class MovieDetailtask extends AsyncTask<String, Void, MovieDetail> {
 		String title = jsonObject.getString("title");
 		String desc = jsonObject.getString("desc");
 		String cast = jsonObject.getString("cast");
-		String coverUrl = jsonObject.getString("coverUrl");
+		String coverUrl = jsonObject.getString("cover_url");
 
 		List<Movie> movies = new ArrayList<>();
 		JSONArray jsonArray = jsonObject.getJSONArray("movie");
+
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject movie = jsonArray.getJSONObject(i);
+
 			String cover_url = movie.getString("cover_url");
 			int idSimilar = movie.getInt("id");
 
