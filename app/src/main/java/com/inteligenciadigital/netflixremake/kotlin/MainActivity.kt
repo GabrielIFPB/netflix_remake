@@ -1,8 +1,10 @@
 package com.inteligenciadigital.netflixremake.kotlin
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,8 +16,6 @@ import com.inteligenciadigital.netflixremake.util.ImageDownloadTask
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.category_item.view.*
 import kotlinx.android.synthetic.main.movie_item.view.*
-import kotlinx.android.synthetic.main.movie_item_similar.view.*
-import kotlinx.android.synthetic.main.movie_item_similar.view.image_view_cover
 
 
 class MainActivity : AppCompatActivity() {
@@ -42,52 +42,54 @@ class MainActivity : AppCompatActivity() {
 	}
 
 	private inner class MainAdapter(val categories: MutableList<Category>) : RecyclerView.Adapter<CategoryHolder>() {
-		override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryHolder {
-			return CategoryHolder(
+
+		override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryHolder = CategoryHolder(
 					layoutInflater.inflate(
 							R.layout.category_item, parent, false)
 			)
-		}
 
-		override fun onBindViewHolder(holder: CategoryHolder, position: Int) {
-			val category = categories[position]
-			holder.bind(category)
-		}
+		override fun onBindViewHolder(holder: CategoryHolder, position: Int) = holder.bind(categories[position])
 
 		override fun getItemCount(): Int = categories.size
 	}
 
 	private inner class CategoryHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-		fun bind(category: Category) {
-			itemView.text_view_title.text = category.name
-			itemView.recycler_view_movie.adapter = MovieAdapter(category.movies)
-			itemView.recycler_view_movie.layoutManager = LinearLayoutManager(this@MainActivity, RecyclerView.HORIZONTAL, false)
+		fun bind(category: Category) = with(itemView) {
+			text_view_title.text = category.name
+			recycler_view_movie.adapter = MovieAdapter(category.movies) { movie ->
+				if (movie.id > 3) {
+					Toast.makeText(this@MainActivity,
+							"Não foi implementado essa funcionalidade",
+							Toast.LENGTH_SHORT)
+				} else {
+					val intent = Intent(this@MainActivity, MovieActivity::class.java)
+					intent.putExtra("id", movie.id)
+					startActivity(intent)
+				}
+			}
+			recycler_view_movie.layoutManager = LinearLayoutManager(this@MainActivity, RecyclerView.HORIZONTAL, false)
 		}
 	}
 
-	private inner class MovieAdapter(val movies: MutableList<Movie>) : RecyclerView.Adapter<MovieHolder>() {
-		override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieHolder {
-			return MovieHolder(
-					layoutInflater.inflate(
-							R.layout.movie_item, parent, false)
-			)
-		}
+	private inner class MovieAdapter(val movies: MutableList<Movie>, private val listener: ((Movie) -> Unit)?) : RecyclerView.Adapter<MovieHolder>() {
 
-		override fun onBindViewHolder(holder: MovieHolder, position: Int) {
-			val movie = movies[position]
-			holder.bind(movie)
-		}
+		override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieHolder = MovieHolder(
+					layoutInflater.inflate(
+							R.layout.movie_item, parent, false),
+					listener
+			)
+
+		override fun onBindViewHolder(holder: MovieHolder, position: Int) = holder.bind(movies[position])
 
 		override fun getItemCount(): Int = movies.size
 	}
 
-	private class MovieHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-		fun bind(movie: Movie) {
-			ImageDownloadTask(itemView.image_view_cover)
-					.execute(movie.coverUrl)
+	private class MovieHolder(itemView: View, val onClick: ((Movie) -> Unit)?) : RecyclerView.ViewHolder(itemView) {
+		fun bind(movie: Movie) = with(itemView) {
+			ImageDownloadTask(image_view_cover).execute(movie.coverUrl)
 
-			itemView.image_view_cover.setOnClickListener {
-
+			image_view_cover.setOnClickListener {
+				onClick?.invoke(movie)
 			}
 		}
 	}

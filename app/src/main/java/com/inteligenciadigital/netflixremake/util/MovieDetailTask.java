@@ -55,7 +55,7 @@ public class MovieDetailTask extends AsyncTask<String, Void, MovieDetail> {
 			int responseCode = urlConnection.getResponseCode();
 			if (responseCode > 400)	throw new IOException("Errro na comunicação do servidor");
 
-			InputStream inputStream = urlConnection.getInputStream();
+//			InputStream inputStream = urlConnection.getInputStream();
 
 			BufferedInputStream in = new BufferedInputStream(urlConnection.getInputStream());
 
