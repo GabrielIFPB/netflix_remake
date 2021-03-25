@@ -14,13 +14,8 @@
 		tools:ignore="AllowBackup.GoogleAppIndexingWarning"
 		android:theme="@style/AppTheme">
 
-		<activity android:name=".MovieActivity">
-<!--			<intent-filter>-->
-<!--				<action android:name="android.intent.action.MAIN" />-->
-
-<!--				<category android:name="android.intent.category.LAUNCHER" />-->
-<!--			</intent-filter>-->
-		</activity>
+<!--		<activity android:name=".MovieActivity" />-->
+		<activity android:name=".kotlin.MovieActivity" />
 		<activity android:name=".kotlin.MainActivity">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />

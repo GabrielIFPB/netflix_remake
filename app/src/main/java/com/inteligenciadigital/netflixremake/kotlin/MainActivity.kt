@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.inteligenciadigital.netflixremake.MovieActivity
 import com.inteligenciadigital.netflixremake.R
 import com.inteligenciadigital.netflixremake.model.Category
 import com.inteligenciadigital.netflixremake.model.Movie
@@ -17,8 +16,6 @@ import com.inteligenciadigital.netflixremake.util.ImageDownloadTask
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.category_item.view.*
 import kotlinx.android.synthetic.main.movie_item.view.*
-import kotlinx.android.synthetic.main.movie_item_similar.view.*
-import kotlinx.android.synthetic.main.movie_item_similar.view.image_view_cover
 
 
 class MainActivity : AppCompatActivity() {
@@ -60,7 +57,7 @@ class MainActivity : AppCompatActivity() {
 		fun bind(category: Category) = with(itemView) {
 			text_view_title.text = category.name
 			recycler_view_movie.adapter = MovieAdapter(category.movies) { movie ->
-				if (movie.id <= 3) {
+				if (movie.id > 3) {
 					Toast.makeText(this@MainActivity,
 							"Não foi implementado essa funcionalidade",
 							Toast.LENGTH_SHORT)

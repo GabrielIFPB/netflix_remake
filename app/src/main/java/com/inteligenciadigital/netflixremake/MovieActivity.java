@@ -42,7 +42,7 @@ public class MovieActivity extends AppCompatActivity implements MovieDetailTask.
 		this.imgCover = findViewById(R.id.image_view_cover);
 		this.recyclerView = findViewById(R.id.recycler_view_similar);
 
-		Toolbar toolbar = findViewById(R.id.tootbar);
+		Toolbar toolbar = findViewById(R.id.toolbar);
 		this.setSupportActionBar(toolbar);
 
 		if (this.getSupportActionBar() != null) {
