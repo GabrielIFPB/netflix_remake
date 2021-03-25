@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.inteligenciadigital.netflixremake.R
 import com.inteligenciadigital.netflixremake.model.Category
 import com.inteligenciadigital.netflixremake.model.Movie
@@ -86,7 +87,8 @@ class MainActivity : AppCompatActivity() {
 
 	private class MovieHolder(itemView: View, val onClick: ((Movie) -> Unit)?) : RecyclerView.ViewHolder(itemView) {
 		fun bind(movie: Movie) = with(itemView) {
-			ImageDownloadTask(image_view_cover).execute(movie.coverUrl)
+			Glide.with(this.context)
+					.load(movie.coverUrl).placeholder(R.drawable.placeholder_bg).into(image_view_cover)
 
 			image_view_cover.setOnClickListener {
 				onClick?.invoke(movie)
