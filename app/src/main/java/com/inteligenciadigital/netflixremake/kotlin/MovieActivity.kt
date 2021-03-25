@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
@@ -18,13 +19,13 @@ import com.bumptech.glide.request.target.DrawableImageViewTarget
 import com.bumptech.glide.request.target.Target
 import com.inteligenciadigital.netflixremake.R
 import com.inteligenciadigital.netflixremake.model.Movie
-import com.inteligenciadigital.netflixremake.util.ImageDownloadTask
-import com.inteligenciadigital.netflixremake.util.MovieDetailTask
+import com.inteligenciadigital.netflixremake.model.MovieDetail
 import kotlinx.android.synthetic.main.activity_movie.*
 import kotlinx.android.synthetic.main.activity_movie.image_view_cover
-import kotlinx.android.synthetic.main.movie_item.view.*
-import kotlinx.android.synthetic.main.movie_item_similar.view.*
 import kotlinx.android.synthetic.main.movie_item_similar.view.image_view_cover
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MovieActivity : AppCompatActivity() {
 
@@ -36,36 +37,47 @@ class MovieActivity : AppCompatActivity() {
 
 		intent.extras?.let {
 			val id = it.getInt("id")
-			val task = MovieDetailTask(this)
-			task.setMovieDetailLoader { movieDetail ->
-				text_view_title.text = movieDetail.movie.title
-				text_view_desc.text = movieDetail.movie.desc
-				text_view_cast.text = getString(R.string.cast, movieDetail.movie.cast)
 
-				Glide.with(this)
-						.load(movieDetail.movie.coverUrl)
-						.listener(object : RequestListener<Drawable> {
-							override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
-								return true
-							}
+			retrofit().create(NetflixAPI::class.java)
+					.getMovieBy(id)
+					.enqueue(object : Callback<MovieDetail> {
+						override fun onResponse(call: Call<MovieDetail>, response: Response<MovieDetail>) {
+							if (response.isSuccessful) {
+								response.body()?.let { movieDetail ->
+									text_view_title.text = movieDetail.title
+									text_view_desc.text = movieDetail.desc
+									text_view_cast.text = getString(R.string.cast, movieDetail.cast)
 
-							override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-								val drawable: LayerDrawable? = ContextCompat.getDrawable(baseContext, R.drawable.shadows) as LayerDrawable?
-								drawable?.let {
-									drawable.setDrawableByLayerId(R.id.cover_drawble, resource)
-									(target as DrawableImageViewTarget).view.setImageDrawable(drawable)
+									Glide.with(this@MovieActivity)
+											.load(movieDetail.coverUrl)
+											.listener(object : RequestListener<Drawable> {
+												override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+													return true
+												}
+
+												override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+													val drawable: LayerDrawable? = ContextCompat.getDrawable(baseContext, R.drawable.shadows) as LayerDrawable?
+													drawable?.let {
+														drawable.setDrawableByLayerId(R.id.cover_drawble, resource)
+														(target as DrawableImageViewTarget).view.setImageDrawable(drawable)
+													}
+													return true
+												}
+											})
+											.into(image_view_cover)
+
+									movieAdapter.movies.clear()
+									movieAdapter.movies.addAll(movieDetail.moviesSimilar)
+									movieAdapter.notifyDataSetChanged()
 								}
-								return true
 							}
-						})
-						.into(image_view_cover)
+						}
 
-				this.movieAdapter.movies.clear()
-				this.movieAdapter.movies.addAll(movieDetail.moviesSimilar)
-				this.movieAdapter.notifyDataSetChanged()
-			}
+						override fun onFailure(call: Call<MovieDetail>, t: Throwable) {
+							Toast.makeText(this@MovieActivity, t.message, Toast.LENGTH_SHORT).show()
+						}
 
-			task.execute("https://tiagoaguiar.co/api/netflix/$id")
+					})
 
 			this.setSupportActionBar(toolbar)
 
